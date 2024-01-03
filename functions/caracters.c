@@ -1,3 +1,4 @@
+//object.c
 typedef struct {
     int x, y;
 } Position;

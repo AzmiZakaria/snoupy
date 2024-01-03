@@ -1,5 +1,5 @@
 
-
+//function.c
 void hideCursor() {
     CONSOLE_CURSOR_INFO cursorInfo;
     HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -36,7 +36,7 @@ void displayGameBoard(char gameBoard[ROWS][COLS]) {
     cursorPos.X = 0;
     cursorPos.Y = 0;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cursorPos);
-
+    printf("|------------------------------------------------------------------|\n");
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
             printf("| %c ", gameBoard[i][j]);
@@ -100,4 +100,87 @@ void moveSnopy(Snopy *snoopy, char direction) {
             snoopy->pos.y = (snoopy->pos.y < COLS - 1) ? snoopy->pos.y + 1 : snoopy->pos.y;
             break;
     }
+}
+void menu(){
+    printf("Menu:\n");
+    printf("1. Règles du jeu\n");
+    printf("2. Lancer niveau\n");
+    printf("3. Charger une partie\n");
+    printf("4. Scores\n");
+    printf("5. Quitter\n");
+
+}
+void saveGameBoardToFile(char gameBoard[ROWS][COLS], const char *fileName) {
+    FILE *file = fopen(fileName, "w");
+
+    if (file == NULL) {
+        printf("Erreur lors de l'ouverture du fichier pour la sauvegarde.\n");
+        return;
+    }
+
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            // Convertir les caractères spéciaux en codes spécifiques lors de l'écriture
+            switch (gameBoard[i][j]) {
+                case 0x2:
+                    fprintf(file, "S ");
+                    break;
+                case 0xB:
+                    fprintf(file, "B ");
+                    break;
+                case 0xE:
+                    fprintf(file, "O ");
+                    break;
+                case 0xF:
+                    fprintf(file, "X ");
+                    break;
+                // Ajoutez d'autres cas spéciaux si nécessaire
+                default:
+                    fprintf(file, "%c ",'v');
+            }
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+}
+void loadGameBoardFromFile(char gameBoard[ROWS][COLS], const char *fileName) {
+    FILE *file = fopen(fileName, "r");
+
+    if (file == NULL) {
+        printf("Erreur lors de l'ouverture du fichier pour le chargement.\n");
+        return;
+    }
+
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            if (fscanf(file, " %c", &gameBoard[i][j]) != 1) {
+                printf("Erreur lors de la lecture du fichier.\n");
+                fclose(file);
+                return;
+            }
+
+            // Convertir les codes spéciaux en caractères spéciaux
+            switch (gameBoard[i][j]) {
+                case 'S':
+                    gameBoard[i][j] = 0x2; // Code spécifique pour Snoopy
+                    break;
+                case 'B':
+                    gameBoard[i][j] = 0xB; // Code spécifique pour Ball
+                    break;
+                case 'O':
+                    gameBoard[i][j] = 0xE; // Code spécifique pour Oiseau
+                    break;
+                case 'X':
+                    gameBoard[i][j] = 0xF; // Code spécifique pour Obstacle
+                    break;
+                default:
+                    gameBoard[i][j] = ' '; // Code spécifique pour Obstacle
+
+                // Ajoutez d'autres cas spéciaux si nécessaire
+            }
+        }
+    }
+
+    fclose(file);
 }

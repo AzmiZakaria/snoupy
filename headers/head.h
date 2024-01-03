@@ -1,7 +1,7 @@
+//head.h
 #define ROWS 10
 #define COLS 20
 extern clock_t lastMoveTime;
-
 #include "../functions/caracters.c"
 #include "../functions/function.c"
 
@@ -20,3 +20,8 @@ void moveSnopy(Snopy *snoopy, char direction);
 void hideCursor();
 
 void showCursor();
+
+void menu();
+void saveGameBoardToFile(char gameBoard[][COLS], const char *fileName);
+
+void loadGameBoardFromFile(char gameBoard[ROWS][COLS], const char *fileName);
